@@ -16,6 +16,9 @@
 
 package ${package};
 
+import org.identityconnectors.common.logging.Log;
+
 public class ${connectorName}Connection {
 
+    private static final Log LOG = Log.getLog(${connectorName}Connection.class);
 }

@@ -16,6 +16,27 @@
 
 package ${package};
 
-public class ${connectorName}Configuration {
+import org.identityconnectors.framework.spi.AbstractConfiguration;
+import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.spi.ConfigurationProperty;
 
+public class ${connectorName}Configuration extends AbstractConfiguration {
+
+    private static final Log LOG = Log.getLog(${connectorName}Configuration.class);
+
+    private String sampleProperty;
+
+    @Override
+    public void validate() {
+        //todo implement
+    }
+
+    @ConfigurationProperty(displayMessageKey = "UI_SAMPLE_PROPERTY", helpMessageKey = "UI_SAMPLE_PROPERTY_HELP")
+    public String getSampleProperty() {
+        return sampleProperty;
+    }
+
+    public void setSampleProperty(String sampleProperty) {
+        this.sampleProperty = sampleProperty;
+    }
 }
