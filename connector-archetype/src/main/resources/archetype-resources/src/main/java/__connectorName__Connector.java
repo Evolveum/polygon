@@ -17,11 +17,36 @@
 package ${package};
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.spi.Configuration;
+import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
 
 #set($connectorNameLowerCase = $connectorName.toLowerCase())
 @ConnectorClass(displayNameKey = "${connectorNameLowerCase}.connector.display", configurationClass = ${connectorName}Configuration.class)
-public class ${connectorName}Connector {
+public class ${connectorName}Connector implements Connector {
 
     private static final Log LOG = Log.getLog(${connectorName}Connector.class);
+
+    private ${connectorName}Configuration configuration;
+    private ${connectorName}Connection connection;
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
+    public void init(Configuration configuration) {
+        this.configuration = (${connectorName}Configuration)configuration;
+        this.connection = new ${connectorName}Connection(this.configuration);
+    }
+
+    @Override
+    public void dispose() {
+        configuration = null;
+        if (connection != null) {
+            connection.dispose();
+            connection = null;
+        }
+    }
 }

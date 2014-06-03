@@ -21,4 +21,14 @@ import org.identityconnectors.common.logging.Log;
 public class ${connectorName}Connection {
 
     private static final Log LOG = Log.getLog(${connectorName}Connection.class);
+
+    private ${connectorName}Configuration configuration;
+
+    public ${connectorName}Connection(${connectorName}Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    public void dispose() {
+        //todo implement
+    }
 }
