@@ -17,11 +17,10 @@
 package ${package};
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.spi.ConnectorClass;
 
 #set($connectorNameLowerCase = $connectorName.toLowerCase())
-@ConnectorClass(
-        displayNameKey = "${connectorNameLowerCase}.connector.display",
-        configurationClass = ${connectorName}Configuration.class)
+@ConnectorClass(displayNameKey = "${connectorNameLowerCase}.connector.display", configurationClass = ${connectorName}Configuration.class)
 public class ${connectorName}Connector {
 
     private static final Log LOG = Log.getLog(${connectorName}Connector.class);

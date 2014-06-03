@@ -11,7 +11,7 @@
         <fileSet filtered="true" packaged="true" encoding="utf-8">
             <directory>src/main/java</directory>
         </fileSet>
-        <fileSet filtered="true" packaged="false" encoding="utf-8">
+        <fileSet filtered="true" packaged="true" encoding="utf-8">
             <directory>src/main/resources</directory>
         </fileSet>
         <fileSet filtered="true" packaged="true" encoding="utf-8">

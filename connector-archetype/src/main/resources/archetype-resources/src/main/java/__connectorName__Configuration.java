@@ -31,7 +31,8 @@ public class ${connectorName}Configuration extends AbstractConfiguration {
         //todo implement
     }
 
-    @ConfigurationProperty(displayMessageKey = "UI_SAMPLE_PROPERTY", helpMessageKey = "UI_SAMPLE_PROPERTY_HELP")
+    @ConfigurationProperty(displayMessageKey = "${connectorNameLowerCase}.config.sampleProperty",
+            helpMessageKey = "${connectorNameLowerCase}.config.sampleProperty.help")
     public String getSampleProperty() {
         return sampleProperty;
     }
