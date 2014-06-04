@@ -60,21 +60,32 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.3.7</version>
-                    <extensions>true</extensions>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
                     <configuration>
-                        <excludeDependencies>false</excludeDependencies>
-                        <instructions>
-                            <Embed-Directory>lib</Embed-Directory>
-                            <Embed-Transitive>true</Embed-Transitive>
-
-                            <ConnectorBundle-FrameworkVersion>${connId.version}</ConnectorBundle-FrameworkVersion>
-                            <ConnectorBundle-Name>${bundle.name}</ConnectorBundle-Name>
-                            <ConnectorBundle-Version>${bundle.version}</ConnectorBundle-Version>
-                        </instructions>
+                        <appendAssemblyId>false</appendAssemblyId>
+                        <descriptors>
+                            <descriptor>src/main/assembly/connector.xml</descriptor>
+                        </descriptors>
+                        <archive>
+                            <index>true</index>
+                            <manifestEntries>
+                                <ConnectorBundle-FrameworkVersion>${connId.version}</ConnectorBundle-FrameworkVersion>
+                                <ConnectorBundle-Name>${bundle.name}</ConnectorBundle-Name>
+                                <ConnectorBundle-Version>${bundle.version}</ConnectorBundle-Version>
+                            </manifestEntries>
+                        </archive>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>make-assembly</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

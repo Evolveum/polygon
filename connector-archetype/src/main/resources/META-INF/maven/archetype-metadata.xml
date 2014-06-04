@@ -30,6 +30,10 @@
         <fileSet filtered="true" packaged="true" encoding="utf-8">
             <directory>src/main/resources</directory>
         </fileSet>
+        <fileSet filtered="true" packaged="false" encoding="utf-8">
+            <directory>src/main/assembly</directory>
+        </fileSet>
+
         <fileSet filtered="true" packaged="true" encoding="utf-8">
             <directory>src/test/java</directory>
         </fileSet>
