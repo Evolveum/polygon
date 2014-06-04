@@ -43,16 +43,40 @@
     </repositories>
 
     <properties>
-        <ConnectorBundle-FrameworkVersion>1.4.0.erc2</ConnectorBundle-FrameworkVersion>
-        <ConnectorBundle-Name>${project.groupId}.${project.artifactId}</ConnectorBundle-Name>
-        <ConnectorBundle-Version>${project.version}</ConnectorBundle-Version>
+        <connId.version>1.4.0.erc2</connId.version>
+        <bundle.name>${project.groupId}.${project.artifactId}</bundle.name>
+        <bundle.version>${project.version}</bundle.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.connid</groupId>
             <artifactId>connector-framework</artifactId>
-            <version>1.4.0.erc2</version>
+            <version>${connId.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.3.7</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <excludeDependencies>false</excludeDependencies>
+                        <instructions>
+                            <Embed-Directory>lib</Embed-Directory>
+                            <Embed-Transitive>true</Embed-Transitive>
+
+                            <ConnectorBundle-FrameworkVersion>${connId.version}</ConnectorBundle-FrameworkVersion>
+                            <ConnectorBundle-Name>${bundle.name}</ConnectorBundle-Name>
+                            <ConnectorBundle-Version>${bundle.version}</ConnectorBundle-Version>
+                        </instructions>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
