@@ -1,4 +1,4 @@
 Maven archetype for Polygon connector
 
-This archetype can be used to create new Polygon connector project.
+This archetype can be used to create new basic Polygon connector project.
 It is based on ConnId connector framework.

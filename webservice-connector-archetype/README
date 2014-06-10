@@ -1,0 +1,4 @@
+Maven archetype for Webservice Polygon connector
+
+This archetype can be used to create new webservice Polygon connector project.
+It is based on ConnId connector framework.

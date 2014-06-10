@@ -10,8 +10,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>connector-archetype</module>
+        <module>basic-connector-archetype</module>
         <module>connector-parent</module>
+        <module>connector-common</module>
+        <module>webservice-connector-archetype</module>
     </modules>
 
     <pluginRepositories>
