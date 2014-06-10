@@ -16,6 +16,24 @@
         <module>webservice-connector-archetype</module>
     </modules>
 
+    <scm>
+        <connection>https://github.com/Evolveum/polygon.git</connection>
+        <developerConnection>git@github.com:Evolveum/polygon.git</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>evolveum-nexus</id>
+            <name>Internal Releases</name>
+            <url>http://nexus.evolveum.com/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>evolveum-nexus</id>
+            <name>Internal Releases</name>
+            <url>http://nexus.evolveum.com/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <pluginRepositories>
         <pluginRepository>
             <id>evolveum</id>
