@@ -54,6 +54,13 @@
             <artifactId>connector-framework</artifactId>
             <version>${connId.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.connid</groupId>
+            <artifactId>connector-test-common</artifactId>
+            <version>${connId.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
