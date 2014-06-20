@@ -85,4 +85,11 @@ public class XMLGregorianCalendarUtils {
 
         return DATE_FORMAT.format(date);
     }
+
+    public static XMLGregorianCalendar asCalendar(String date) {
+        if (date == null || date.isEmpty()) {
+            return null;
+        }
+        return df.newXMLGregorianCalendar(date);
+    }
 }
