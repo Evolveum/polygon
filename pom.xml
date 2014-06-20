@@ -16,6 +16,11 @@
         <module>webservice-connector-archetype</module>
     </modules>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.source.version>1.6</project.source.version>
+    </properties>
+
     <scm>
         <connection>https://github.com/Evolveum/polygon.git</connection>
         <developerConnection>git@github.com:Evolveum/polygon.git</developerConnection>
@@ -41,4 +46,25 @@
             <url>http://nexus.evolveum.com/nexus/content/groups/public</url>
         </pluginRepository>
     </pluginRepositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <source>${project.source.version}</source>
+                        <target>${project.source.version}</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.6</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
