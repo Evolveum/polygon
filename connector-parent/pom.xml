@@ -43,7 +43,6 @@
     </repositories>
 
     <properties>
-        <connId.version>1.4.0.0-SNAPSHOT</connId.version>
         <bundle.name>${project.groupId}.${project.artifactId}</bundle.name>
         <bundle.version>${project.version}</bundle.version>
     </properties>

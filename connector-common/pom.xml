@@ -27,5 +27,11 @@
 
     <artifactId>connector-common</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.connid</groupId>
+            <artifactId>connector-framework</artifactId>
+            <version>${connId.version}</version>
+        </dependency>
+    </dependencies>
 </project>
