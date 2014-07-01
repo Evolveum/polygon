@@ -48,7 +48,7 @@ public class XMLGregorianCalendarUtils {
      * value in the date parameter. If the date parameter is null then
      * this method will simply return null.
      */
-    public static XMLGregorianCalendar asXMLGregorianCalendar(Date date) {
+    public static XMLGregorianCalendar dateAsCalendar(Date date) {
         if (date == null) {
             return null;
         } else {
@@ -66,7 +66,7 @@ public class XMLGregorianCalendarUtils {
      * value in the xgc parameter. If the xgc parameter is null then
      * this method will simply return null.
      */
-    public static Date asDate(XMLGregorianCalendar xgc) {
+    public static Date calendarAsDate(XMLGregorianCalendar xgc) {
         if (xgc == null) {
             return null;
         } else {
@@ -74,11 +74,11 @@ public class XMLGregorianCalendarUtils {
         }
     }
 
-    public static String asStringDate(XMLGregorianCalendar xgc) {
-        return asStringDate(asDate(xgc));
+    public static String calendarAsString(XMLGregorianCalendar xgc) {
+        return dateAsString(calendarAsDate(xgc));
     }
 
-    public static String asStringDate(Date date) {
+    public static String dateAsString(Date date) {
         if (date == null) {
             return null;
         }
@@ -86,7 +86,7 @@ public class XMLGregorianCalendarUtils {
         return DATE_FORMAT.format(date);
     }
 
-    public static XMLGregorianCalendar asCalendar(String date) {
+    public static XMLGregorianCalendar stringAsCalendar(String date) {
         if (date == null || date.isEmpty()) {
             return null;
         }
