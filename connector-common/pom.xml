@@ -29,7 +29,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.connid</groupId>
+            <groupId>net.tirasa.connid</groupId>
             <artifactId>connector-framework</artifactId>
             <version>${connId.version}</version>
         </dependency>

@@ -49,19 +49,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.connid</groupId>
-            <artifactId>connector-framework</artifactId>
-            <version>${connId.version}</version>
+		<groupId>net.tirasa.connid</groupId>
+		<artifactId>connector-framework</artifactId>
+        	<version>${connId.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.connid</groupId>
+            <groupId>net.tirasa.connid</groupId>
             <artifactId>connector-test-common</artifactId>
             <version>${connId.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.connid</groupId>
+            <groupId>net.tirasa.connid</groupId>
             <artifactId>connector-framework-contract</artifactId>
             <version>${connId.version}</version>
             <scope>test</scope>
