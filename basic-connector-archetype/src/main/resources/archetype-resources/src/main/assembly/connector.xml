@@ -40,7 +40,7 @@
             <useProjectArtifact>false</useProjectArtifact>
             <scope>runtime</scope>
             <excludes>
-                <exclude>org.connid:connector-framework</exclude>
+                <exclude>net.tirasa.connid:connector-framework</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
