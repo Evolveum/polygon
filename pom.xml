@@ -6,7 +6,7 @@
 
     <groupId>com.evolveum.polygon</groupId>
     <artifactId>polygon</artifactId>
-    <version>3.0.1</version>
+    <version>3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
