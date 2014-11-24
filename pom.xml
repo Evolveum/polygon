@@ -6,7 +6,7 @@
 
     <groupId>com.evolveum.polygon</groupId>
     <artifactId>polygon</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>1.4.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -19,7 +19,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.source.version>1.7</project.source.version>
-        <connId.version>1.4.0.e1</connId.version>
+        <connId.version>1.4.0.1-SNAPSHOT</connId.version>
     </properties>
 
     <scm>

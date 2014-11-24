@@ -23,7 +23,7 @@
     <parent>
         <artifactId>polygon</artifactId>
         <groupId>com.evolveum.polygon</groupId>
-        <version>3.1-SNAPSHOT</version>
+        <version>1.4.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>connector-parent</artifactId>
