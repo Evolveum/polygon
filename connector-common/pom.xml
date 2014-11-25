@@ -31,7 +31,6 @@
         <dependency>
             <groupId>net.tirasa.connid</groupId>
             <artifactId>connector-framework</artifactId>
-            <version>${connId.version}</version>
         </dependency>
     </dependencies>
 </project>
