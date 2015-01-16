@@ -6,12 +6,12 @@
 
     <groupId>com.evolveum.polygon</groupId>
     <artifactId>basic-connector-archetype</artifactId>
-    <version>1.4.0.49</version>
+    <version>1.4.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>com.evolveum.polygon</groupId>
         <artifactId>polygon</artifactId>
-        <version>1.4.0.49</version>
+        <version>1.4.1.0-SNAPSHOT</version>
     </parent>
 </project>
