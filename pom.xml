@@ -19,8 +19,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.source.version>1.7</project.source.version>
-        <polygon.version>1.4.0.49</polygon.version>
-        <connId.version>1.4.0.49</connId.version>
+        <polygon.version>1.4.1.0-SNAPSHOT</polygon.version>
+        <connId.version>1.4.1.0-SNAPSHOT</connId.version>
         <testng.version>6.8.8</testng.version>
     </properties>
 
