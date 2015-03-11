@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.identityconnectors.common.StringUtil;
 import org.identityconnectors.framework.common.objects.Attribute;
+import org.identityconnectors.framework.common.objects.AttributeInfo;
+import org.identityconnectors.framework.common.objects.ObjectClassInfo;
 
 /**
  * @author Radovan Semancik
@@ -50,6 +52,15 @@ public class SchemaUtil {
 			throw new IllegalArgumentException("Attribute "+attribute.getName()+" cannot be blank");
 		}
 		return value;
+	}
+
+	public static AttributeInfo findAttributeInfo(ObjectClassInfo icfObjectClassInfo, Attribute attribute) {
+		for (AttributeInfo attributeInfo: icfObjectClassInfo.getAttributeInfo()) {
+			if (attributeInfo.is(attribute.getName())) {
+				return attributeInfo;
+			}
+		}
+		return null;
 	}
 
 }
