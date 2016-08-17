@@ -35,7 +35,8 @@ public class AbstractRestConfiguration extends AbstractConfiguration {
 	private GuardedString password = null;
 	
 	private String authMethod = AuthMethod.NONE.name();
-	
+
+	private Boolean trustAllCertificates = false;
 
 	public String getServiceAddress() {
 		return serviceAddress;
@@ -67,6 +68,14 @@ public class AbstractRestConfiguration extends AbstractConfiguration {
 
 	public void setAuthMethod(String authMethod) {
 		this.authMethod = authMethod;
+	}
+
+	public Boolean getTrustAllCertificates() {
+		return trustAllCertificates;
+	}
+
+	public void setTrustAllCertificates(Boolean trustAllCertificates) {
+		this.trustAllCertificates = trustAllCertificates;
 	}
 
 	@Override
