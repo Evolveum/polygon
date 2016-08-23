@@ -36,6 +36,8 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.exceptions.*;
+import org.identityconnectors.framework.common.objects.Attribute;
+import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 
@@ -44,6 +46,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author semancik
@@ -163,7 +167,7 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
      * Checks HTTP response for errors. If the response is an error then the method
      * throws the ConnId exception that is the most appropriate match for the error.
      */
-    protected void processResponseErrors(HttpResponse response) {
+    public void processResponseErrors(HttpResponse response) {
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200 && statusCode <= 299) {
             return;
@@ -201,6 +205,100 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
             } catch (IOException e) {
                 LOG.error("Error closing HTTP client: {0}", e.getMessage(), e);
             }
+        }
+    }
+
+    protected String getStringAttr(Set<Attribute> attributes, String attrName) throws InvalidAttributeValueException {
+        return getAttr(attributes, attrName, String.class);
+    }
+
+    protected String getStringAttr(Set<Attribute> attributes, String attrName, String defaultVal) throws InvalidAttributeValueException {
+        return getAttr(attributes, attrName, String.class, defaultVal);
+    }
+
+    protected String getStringAttr(Set<Attribute> attributes, String attrName, String defaultVal, String defaultVal2, boolean notNull) throws InvalidAttributeValueException {
+        String ret = getAttr(attributes, attrName, String.class, defaultVal);
+        if (notNull && ret == null) {
+            if (notNull && defaultVal == null)
+                return defaultVal2;
+            return defaultVal;
+        }
+        return ret;
+    }
+
+    protected String getStringAttr(Set<Attribute> attributes, String attrName, String defaultVal, boolean notNull) throws InvalidAttributeValueException {
+        String ret = getAttr(attributes, attrName, String.class, defaultVal);
+        if (notNull && ret == null)
+            return defaultVal;
+        return ret;
+    }
+
+    protected <T> T getAttr(Set<Attribute> attributes, String attrName, Class<T> type) throws InvalidAttributeValueException {
+        return getAttr(attributes, attrName, type, null);
+    }
+
+    protected <T> T getAttr(Set<Attribute> attributes, String attrName, Class<T> type, T defaultVal, boolean notNull) throws InvalidAttributeValueException {
+        T ret = getAttr(attributes, attrName, type, defaultVal);
+        if (notNull && ret == null)
+            return defaultVal;
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getAttr(Set<Attribute> attributes, String attrName, Class<T> type, T defaultVal) throws InvalidAttributeValueException {
+        for (Attribute attr : attributes) {
+            if (attrName.equals(attr.getName())) {
+                List<Object> vals = attr.getValue();
+                if (vals == null || vals.isEmpty()) {
+                    // set empty value
+                    return null;
+                }
+                if (vals.size() == 1) {
+                    Object val = vals.get(0);
+                    if (val == null) {
+                        // set empty value
+                        return null;
+                    }
+                    if (type.isAssignableFrom(val.getClass())) {
+                        return (T) val;
+                    }
+                    throw new InvalidAttributeValueException("Unsupported type " + val.getClass() + " for attribute " + attrName);
+                }
+                throw new InvalidAttributeValueException("More than one value for attribute " + attrName);
+            }
+        }
+        // set default value when attrName not in changed attributes
+        return defaultVal;
+    }
+
+    protected String[] getMultiValAttr(Set<Attribute> attributes, String attrName, String[] defaultVal) {
+        for (Attribute attr : attributes) {
+            if (attrName.equals(attr.getName())) {
+                List<Object> vals = attr.getValue();
+                if (vals == null || vals.isEmpty()) {
+                    // set empty value
+                    return new String[0];
+                }
+                String[] ret = new String[vals.size()];
+                for (int i = 0; i < vals.size(); i++) {
+                    Object valAsObject = vals.get(i);
+                    if (valAsObject == null)
+                        throw new InvalidAttributeValueException("Value " + null + " must be not null for attribute " + attrName);
+
+                    String val = (String) valAsObject;
+                    ret[i] = val;
+                }
+                return ret;
+            }
+        }
+        // set default value when attrName not in changed attributes
+        return defaultVal;
+    }
+
+
+    protected <T> void addAttr(ConnectorObjectBuilder builder, String attrName, T attrVal) {
+        if (attrVal != null) {
+            builder.addAttribute(attrName, attrVal);
         }
     }
 
