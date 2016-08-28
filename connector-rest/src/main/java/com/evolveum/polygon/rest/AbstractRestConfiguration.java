@@ -17,6 +17,7 @@ package com.evolveum.polygon.rest;
 
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.spi.AbstractConfiguration;
+import org.identityconnectors.framework.spi.ConfigurationProperty;
 
 /**
  * @author semancik
@@ -70,6 +71,8 @@ public class AbstractRestConfiguration extends AbstractConfiguration {
 		this.authMethod = authMethod;
 	}
 
+	@ConfigurationProperty(displayMessageKey = "rest.config.trustAllCertificates",
+			helpMessageKey = "rest.config.trustAllCertificates.help")
 	public Boolean getTrustAllCertificates() {
 		return trustAllCertificates;
 	}

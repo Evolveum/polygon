@@ -296,10 +296,11 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
     }
 
 
-    protected <T> void addAttr(ConnectorObjectBuilder builder, String attrName, T attrVal) {
+    protected <T> T addAttr(ConnectorObjectBuilder builder, String attrName, T attrVal) {
         if (attrVal != null) {
             builder.addAttribute(attrName, attrVal);
         }
+        return attrVal;
     }
 
 }
