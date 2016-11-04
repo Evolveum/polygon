@@ -26,7 +26,7 @@ import org.identityconnectors.framework.spi.ConfigurationProperty;
 public class AbstractRestConfiguration extends AbstractConfiguration {
 	
 	public enum AuthMethod {
-        NONE, BASIC
+        NONE, BASIC, TOKEN
 	}
 	
 	private String serviceAddress = null;
@@ -36,6 +36,10 @@ public class AbstractRestConfiguration extends AbstractConfiguration {
 	private GuardedString password = null;
 	
 	private String authMethod = AuthMethod.NONE.name();
+
+	private String tokenName = null;
+
+	private String tokenValue = null;
 
 	private Boolean trustAllCertificates = false;
 
@@ -69,6 +73,22 @@ public class AbstractRestConfiguration extends AbstractConfiguration {
 
 	public void setAuthMethod(String authMethod) {
 		this.authMethod = authMethod;
+	}
+
+	public String getTokenName() {
+		return tokenName;
+	}
+
+	public void setTokenName(String tokenName) {
+		this.tokenName = tokenName;
+	}
+
+	public String getTokenValue() {
+		return tokenValue;
+	}
+
+	public void setTokenValue(String tokenValue) {
+		this.tokenValue = tokenValue;
 	}
 
 	@ConfigurationProperty(displayMessageKey = "rest.config.trustAllCertificates",
