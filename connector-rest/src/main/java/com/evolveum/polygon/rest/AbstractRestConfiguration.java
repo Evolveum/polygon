@@ -39,9 +39,13 @@ public class AbstractRestConfiguration extends AbstractConfiguration {
 
 	private String tokenName = null;
 
-	private String tokenValue = null;
+	private GuardedString tokenValue = null;
 
 	private Boolean trustAllCertificates = false;
+
+    private String proxy = null;
+
+    private Integer proxyPort = 8080;
 
 	public String getServiceAddress() {
 		return serviceAddress;
@@ -83,11 +87,11 @@ public class AbstractRestConfiguration extends AbstractConfiguration {
 		this.tokenName = tokenName;
 	}
 
-	public String getTokenValue() {
+	public GuardedString getTokenValue() {
 		return tokenValue;
 	}
 
-	public void setTokenValue(String tokenValue) {
+	public void setTokenValue(GuardedString tokenValue) {
 		this.tokenValue = tokenValue;
 	}
 
@@ -101,7 +105,24 @@ public class AbstractRestConfiguration extends AbstractConfiguration {
 		this.trustAllCertificates = trustAllCertificates;
 	}
 
-	@Override
+
+    public String getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    @Override
 	public void validate() {
 		// TODO Auto-generated method stub
 		

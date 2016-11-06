@@ -32,8 +32,11 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.util.EntityUtils;
+import org.identityconnectors.common.StringUtil;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.exceptions.*;
@@ -52,7 +55,6 @@ import java.util.Set;
 
 /**
  * @author semancik
- *
  */
 public abstract class AbstractRestConnector<C extends AbstractRestConfiguration> implements Connector {
 
@@ -133,8 +135,14 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
                 throw new ConnectorIOException(e.getMessage(), e);
             }
         }
+        if (StringUtil.isNotEmpty(getConfiguration().getProxy())) {
+            HttpHost proxy = new HttpHost(getConfiguration().getProxy(), getConfiguration().getProxyPort());
+            DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+            httpClientBuilder.setRoutePlanner(routePlanner);
+        }
 
         CloseableHttpClient httpClient = httpClientBuilder.build();
+
         return httpClient;
     }
 
@@ -147,8 +155,19 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
      */
     public CloseableHttpResponse execute(HttpUriRequest request) {
         try {
-            if (AbstractRestConfiguration.AuthMethod.TOKEN.equals(getConfiguration().getAuthMethod())){
-                request.setHeader(getConfiguration().getTokenName(), getConfiguration().getTokenValue());
+            if (AbstractRestConfiguration.AuthMethod.TOKEN.name().equals(getConfiguration().getAuthMethod())) {
+
+                final StringBuilder token = new StringBuilder();
+                if (getConfiguration().getTokenValue() != null) {
+                    getConfiguration().getTokenValue().access(new GuardedString.Accessor() {
+                        @Override
+                        public void access(char[] chars) {
+                            token.append(new String(chars));
+                        }
+                    });
+                }
+
+                request.setHeader(getConfiguration().getTokenName(), token.toString());
             }
             return getHttpClient().execute(request);
         } catch (IOException e) {
@@ -180,7 +199,14 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
         if (statusCode >= 200 && statusCode <= 299) {
             return;
         }
-        String message = "HTTP error " + statusCode + " " + response.getStatusLine().getReasonPhrase();
+        String responseBody = null;
+        try {
+            responseBody = EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            LOG.warn("cannot read response body: " + e, e);
+        }
+
+        String message = "HTTP error " + statusCode + " " + response.getStatusLine().getReasonPhrase() + " : " + responseBody;
         LOG.error("{0}", message);
         if (statusCode == 400 || statusCode == 405 || statusCode == 406) {
             closeResponse(response);
@@ -215,9 +241,8 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
         // to avoid pool waiting
         try {
             response.close();
-        }
-        catch (IOException e){
-            LOG.warn(e, "Error when trying to close response: "+response);
+        } catch (IOException e) {
+            LOG.warn(e, "Error when trying to close response: " + response);
         }
     }
 
@@ -287,9 +312,9 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
                     if (type.isAssignableFrom(val.getClass())) {
                         return (T) val;
                     }
-                    throw new InvalidAttributeValueException("Unsupported type " + val.getClass() + " for attribute " + attrName+", value: ");
+                    throw new InvalidAttributeValueException("Unsupported type " + val.getClass() + " for attribute " + attrName + ", value: ");
                 }
-                throw new InvalidAttributeValueException("More than one value for attribute " + attrName + ", values: "+vals);
+                throw new InvalidAttributeValueException("More than one value for attribute " + attrName + ", values: " + vals);
             }
         }
         // set default value when attrName not in changed attributes
