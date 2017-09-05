@@ -30,6 +30,7 @@
         <module>connector-parent</module>
         <module>connector-common</module>
         <module>connector-rest</module>
+        <module>connector-jdbc</module>
         <module>webservice-connector-archetype</module>
     </modules>
 
