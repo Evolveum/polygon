@@ -50,7 +50,7 @@ public class AbstractJdbcConfiguration extends AbstractConfiguration {
 	private boolean rethrowAllSQLExceptions = true;
 	private boolean suppressPass = true;
 	private String validConnectionQuery;
-	private String changeLogColumn = EMPTY_STRING;
+	//private String changeLogColumn = EMPTY_STRING;
 	private String datasource = EMPTY_STRING;
 	private String[] JNDIProperties;
 	
@@ -172,14 +172,14 @@ public class AbstractJdbcConfiguration extends AbstractConfiguration {
 		this.validConnectionQuery = value;
 	}
 
-	@ConfigurationProperty(order = 14, operations = SyncOp.class, displayMessageKey = "CHANGE_LOG_COLUMN_DISPLAY_NAME", helpMessageKey = "CHANGE_LOG_COLUMN_HELP")
-	public String getChangeLogColumn() {
-		return this.changeLogColumn;
-	}
-
-	public void setChangeLogColumn(String value) {
-		this.changeLogColumn = value;
-	}
+//	@ConfigurationProperty(order = 14, operations = SyncOp.class, displayMessageKey = "CHANGE_LOG_COLUMN_DISPLAY_NAME", helpMessageKey = "CHANGE_LOG_COLUMN_HELP")
+//	public String getChangeLogColumn() {
+//		return this.changeLogColumn;
+//	}
+//
+//	public void setChangeLogColumn(String value) {
+//		this.changeLogColumn = value;
+//	}
     
 	@ConfigurationProperty(order = 15, displayMessageKey = "SUPRESS_PASSWORD_DISPLAY_NAME", helpMessageKey = "SUPRESS_PASSWORD_HELP")
 	public boolean getSuppressPassword() {
