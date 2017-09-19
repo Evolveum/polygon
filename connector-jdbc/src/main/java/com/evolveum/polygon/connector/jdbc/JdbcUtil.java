@@ -15,6 +15,10 @@
  */
 package com.evolveum.polygon.connector.jdbc;
 
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Properties;
 
 import org.identityconnectors.common.StringUtil;
@@ -49,6 +53,28 @@ public final class JdbcUtil {
             }
         }
         return properties;
+    }
+	
+	public static Class<?> getTypeOfAttribute(int type) {
+        if(type == Types.BIGINT){
+        	return Long.class;
+        }else if(type == Types.DOUBLE){
+        	return Double.class;
+        }else if(type == Types.FLOAT || type == Types.REAL){
+        	return Float.class;
+        }else if(type == Types.INTEGER){
+        	return Integer.class;
+        }else if(type == Types.BOOLEAN || type == Types.BIT){
+        	return Boolean.class;
+        }else if(type == Types.TINYINT){
+        	return Byte.class;
+        }else if(type == Types.BLOB || type == Types.BINARY || type == Types.VARBINARY || type == Types.LONGVARBINARY){
+        	return byte[].class;
+        }else if(type == Types.DECIMAL || type == Types.NUMERIC){
+        	return BigDecimal.class;
+        }else{
+        	return String.class;
+        }
     }
 	
 }

@@ -15,6 +15,9 @@
  */
 package com.evolveum.polygon.connector.jdbc;
 
+import java.math.BigDecimal;
+import java.sql.Types;
+
 /**
  * @author Lukas Skublik
  *
@@ -23,14 +26,24 @@ public class SQLParameter {
 
 	private int sqlType;
 	private Object value;
+	private String name;
 	
 	/**
 	 * 
 	 */
-	public SQLParameter(int sqlType, Object value) {
+	public SQLParameter(int sqlType, Object value, String name) {
 		this.sqlType = sqlType;
 		this.value = value;
+		this.name = name;
 	}
+	
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	
 	
 	/**
 	 * @return the sqlType
@@ -46,4 +59,50 @@ public class SQLParameter {
 		return value;
 	} 
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getName()).append(" = ");
+		
+		if(getSqlType() == Types.BIGINT){
+        	sb.append("(BIGINT)");
+        }else if(getSqlType() == Types.DOUBLE){
+        	sb.append("(DOUBLE)");
+        }else if(getSqlType() == Types.FLOAT){
+        	sb.append("(FLOAT)");
+        }else if(getSqlType() == Types.REAL){
+        	sb.append("(REAL)");
+        }else if(getSqlType() == Types.INTEGER){
+        	sb.append("(INTEGER)");
+        }else if(getSqlType() == Types.BIT){
+        	sb.append("(BIT)");
+        }else if(getSqlType() == Types.BOOLEAN ){
+        	sb.append("(BOOLEAN)");
+        }else if(getSqlType() == Types.TINYINT){
+        	sb.append("(TINYINT)");
+        }else if(getSqlType() == Types.BLOB){
+        	sb.append("(BLOB)");
+        }else if(getSqlType() == Types.BINARY){
+        	sb.append("(BINARY)");
+        }else if(getSqlType() == Types.VARBINARY){
+        	sb.append("(VARBINARY)");
+        }else if(getSqlType() == Types.LONGVARBINARY){
+        	sb.append("(LONGVARBINARY)");
+        }else if(getSqlType() == Types.DECIMAL){
+        	sb.append("(DECIMAL)");
+        }else if(getSqlType() == Types.NUMERIC){
+        	sb.append("(NUMERIC)");
+        }else if(getSqlType() == Types.VARCHAR){
+        	sb.append("(VARCHAR)");
+        }else {
+        	sb.append("(Number of SQL Type: ").append(getSqlType()).append(")");
+        }
+		sb.append(" ").append(getValue());
+		
+		
+		return sb.toString();
+	}
 }

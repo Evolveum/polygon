@@ -23,12 +23,18 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -37,6 +43,10 @@ import javax.sql.DataSource;
 
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
+import org.identityconnectors.framework.common.objects.AttributeInfo;
+import org.identityconnectors.framework.common.objects.AttributeInfoBuilder;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 
@@ -48,6 +58,7 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 
 	private C configuration;
 	private Connection connection;
+	private Map<String, Integer> sqlTypes = new HashMap<String, Integer>();
 	
 	private static final Log LOGGER = Log.getLog(AbstractJdbcConnector.class);
 
@@ -55,7 +66,7 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 	@Override
 	public void dispose() {
 		try {
-			if(!connection.isClosed() || connection != null){
+			if(connection != null && !connection.isClosed()){
 				this.connection.close();
 				this.connection = null;
 			}
@@ -83,6 +94,13 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 	 */
 	public Connection getConnection() {
 		return connection;
+	}
+	
+	/**
+	 * @return the sqlTypes
+	 */
+	public Map<String, Integer> getSqlTypes() {
+		return sqlTypes;
 	}
 	
 	private Connection openConnection(C config){
@@ -144,8 +162,16 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		return execute(sql, sqlValuesOfParameters, true);
 	}
 	
+	public ResultSet executeQuery(String sql){
+		return execute(sql, null, true);
+	}
+	
 	public void executeUpdate(String sql, List<SQLParameter> sqlValuesOfParameters){
 		execute(sql, sqlValuesOfParameters, false);
+	}
+	
+	public void executeUpdate(String sql){
+		execute(sql, null, false);
 	}
 	
 	private ResultSet execute(String sql, List<SQLParameter> sqlValuesOfParameters, boolean queryOrUpdate){
@@ -154,7 +180,7 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		
 		try {
 			pstmt = getConnection().prepareStatement(sql);
-			if(sql.contains("//?") && sqlValuesOfParameters != null){
+			if(sql.contains("?") && sqlValuesOfParameters != null){
 				setSqlParameters(pstmt, sql, sqlValuesOfParameters);
 			}
 			if(queryOrUpdate){
@@ -178,16 +204,26 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		}
 		return rs;
 	}
+	private int countChar(String str, char sch){
+		int count = 0;
+		for(char ch :str.toCharArray()){
+			if(sch == ch){
+				count++;
+			}
+		}
+		return count;
+	}
 	
 	private void setSqlParameters(PreparedStatement pstmt, String sql, List<SQLParameter> sqlValuesOfParameters) throws SQLException {
-		if(sql.split("//?").length != sqlValuesOfParameters.size()+1){
+		if(Integer.compare(countChar(sql, '?'), sqlValuesOfParameters.size()) != 0){
 			throw new IllegalArgumentException("Count of provided parameters and count of needed parameters in sql query is not same.");
 		}
 		
-		for(int i=0; i< sqlValuesOfParameters.size();i++){
+		for(int i=1; i< sqlValuesOfParameters.size()+1;i++){
 			
-			int sqlType = sqlValuesOfParameters.get(i).getSqlType();
-			Object value = sqlValuesOfParameters.get(i).getValue();
+			int sqlType = sqlValuesOfParameters.get(i-1).getSqlType();
+			Object value = sqlValuesOfParameters.get(i-1).getValue();
+			
 			
 			if(value == null) {
 				pstmt.setObject(i, sqlType);
@@ -227,7 +263,50 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 	        	pstmt.setObject(i, value);
 	        }	
 		}
+	}
+	
+	protected Set<AttributeInfo> buildAttributeInfosFromTable(String nameOfTable, String keyNameOfTable, List<String> excludedNames) {
 		
+		if (nameOfTable == null) {
+			LOGGER.error("Attribute nameOfTable not provided.");
+			throw new InvalidAttributeValueException("Attribute nameOfTable not provided.");
+		}
+		if (keyNameOfTable == null) {
+			LOGGER.error("Attribute keyNameOfTable not provided.");
+			throw new InvalidAttributeValueException("Attribute keyNameOfTable not provided.");
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * FROM ").append(nameOfTable).append(" WHERE ").append(keyNameOfTable).append(" IS NULL");
+		String sql = sb.toString();
+		
+		ResultSet result = null;
+		Statement stmt = null;
+		try {
+			stmt = getConnection().createStatement();
+
+			result = stmt.executeQuery(sql);
+			Set<AttributeInfo> attrsInfo = new HashSet<AttributeInfo>();
+			ResultSetMetaData metaData = result.getMetaData();
+			int countOfAttributes = metaData.getColumnCount();
+			for (int i = 1; i <= countOfAttributes; i++) {
+				final String nameOfColumn = metaData.getColumnName(i);
+				final AttributeInfoBuilder attrInfoBuilder = new AttributeInfoBuilder();
+				final Integer numberOfType = metaData.getColumnType(i);
+				sqlTypes.put(nameOfColumn.toLowerCase(), numberOfType);
+				if (excludedNames == null || !excludedNames.contains(nameOfColumn)) {
+					
+					Class<?> type = JdbcUtil.getTypeOfAttribute(numberOfType);
+					attrInfoBuilder.setName(nameOfColumn.toLowerCase());
+					attrInfoBuilder.setType(type);
+					attrInfoBuilder.setRequired(metaData.isNullable(i)==ResultSetMetaData.columnNoNulls);
+					attrsInfo.add(attrInfoBuilder.build());
+				}
+			}
+			return attrsInfo;
+		} catch (SQLException ex) {
+			throw new ConnectorException(ex.getMessage(), ex);
+		}
 	}
 
 }

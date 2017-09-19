@@ -25,6 +25,18 @@ public class SQLParameterBuilder {
 	
 	private int sqlType = Types.NULL;
 	private Object value = null;
+	private String name = "";
+	
+	/**
+	 * 
+	 */
+	public SQLParameter build(int type, Object value, String name) {
+		SQLParameterBuilder sqlBuilder = new SQLParameterBuilder();
+		sqlBuilder.setValue(value);
+		sqlBuilder.setSqlType(type);
+		sqlBuilder.setName(name);
+		return sqlBuilder.build();
+	}
 	
 	/**
 	 * 
@@ -49,7 +61,7 @@ public class SQLParameterBuilder {
 	 * 
 	 */
 	public SQLParameter build() {
-		return new SQLParameter(sqlType, value);
+		return new SQLParameter(sqlType, value, name);
 	}
 	
 	/**
@@ -64,5 +76,12 @@ public class SQLParameterBuilder {
 	 */
 	public void setValue(Object value) {
 		this.value = value;
+	}
+	
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 }
