@@ -16,7 +16,7 @@
 package com.evolveum.polygon.connector.jdbc;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Properties;
@@ -76,5 +76,30 @@ public final class JdbcUtil {
         	return String.class;
         }
     }
+	
+	public static Object getValueOfColumn(int type, int i, ResultSet rs) throws SQLException{
+		
+		if(type == Types.TINYINT){
+			return rs.getByte(i);
+		} else if(type == Types.DECIMAL || type == Types.NUMERIC){
+			return rs.getBigDecimal(i);
+		} else if(type == Types.DOUBLE || type == Types.FLOAT || type == Types.REAL || type == Types.INTEGER || type == Types.BIGINT){
+			return rs.getObject(i);
+		} else if(type == Types.BLOB || type == Types.BINARY || type == Types.VARBINARY || type == Types.LONGVARBINARY){
+			return rs.getObject(i);
+		} else if(type == Types.TIMESTAMP){
+			return rs.getTimestamp(i);
+		} else if(type == Types.DATE){
+			return rs.getDate(i);
+		} else if(type == Types.TIME){
+			return rs.getTime(i);
+		} else if(type == Types.BIT || type == Types.BOOLEAN){
+			return rs.getBoolean(i);
+		} else if(type == Types.NULL){
+			return rs.getObject(i);
+		} else {
+			return rs.getString(i);
+		}
+	}
 	
 }

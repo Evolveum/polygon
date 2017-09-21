@@ -29,6 +29,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,8 @@ import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
+import org.identityconnectors.framework.common.objects.Attribute;
+import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.AttributeInfo;
 import org.identityconnectors.framework.common.objects.AttributeInfoBuilder;
 import org.identityconnectors.framework.spi.Configuration;
@@ -59,6 +62,7 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 	private C configuration;
 	private Connection connection;
 	private Map<String, Integer> sqlTypes = new HashMap<String, Integer>();
+	private List<String> namesOfRequiredColumns = new ArrayList<String>();
 	
 	private static final Log LOGGER = Log.getLog(AbstractJdbcConnector.class);
 
@@ -70,9 +74,11 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 				this.connection.close();
 				this.connection = null;
 			}
-		} catch (SQLException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
+		} catch (SQLException ex) {
+			LOGGER.error(ex.getMessage());
+			if(rethrowSQLException(ex.getErrorCode())){
+				throw new ConnectorException(ex.getMessage(), ex);
+			}
 		}
 	}
 
@@ -138,9 +144,11 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		
 		} catch (ClassNotFoundException e) {
 			LOGGER.error("Selected JDBC Driver "+ config.getJdbcDriver() +" is not found on classpath. " + e);
-		} catch (SQLException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
+		} catch (SQLException ex) {
+			LOGGER.error(ex.getMessage());
+			if(rethrowSQLException(ex.getErrorCode())){
+				throw new ConnectorException(ex.getMessage(), ex);
+			}
 		} catch (NamingException e) {
 			LOGGER.error("It was not possible constructs an initial context using the supplied environment. " + e);
 		}
@@ -158,25 +166,26 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		return sbPass.toString();
 	}
 	
-	public ResultSet executeQuery(String sql, List<SQLParameter> sqlValuesOfParameters){
+	public List<List<Attribute>> executeQueryOnTable(String sql, List<SQLParameter> sqlValuesOfParameters){
 		return execute(sql, sqlValuesOfParameters, true);
 	}
 	
-	public ResultSet executeQuery(String sql){
+	public List<List<Attribute>> executeQueryOnTable(String sql){
 		return execute(sql, null, true);
 	}
 	
-	public void executeUpdate(String sql, List<SQLParameter> sqlValuesOfParameters){
+	public void executeUpdateOnTable(String sql, List<SQLParameter> sqlValuesOfParameters){
 		execute(sql, sqlValuesOfParameters, false);
 	}
 	
-	public void executeUpdate(String sql){
+	public void executeUpdateOnTable(String sql){
 		execute(sql, null, false);
 	}
 	
-	private ResultSet execute(String sql, List<SQLParameter> sqlValuesOfParameters, boolean queryOrUpdate){
+	private List<List<Attribute>> execute(String sql, List<SQLParameter> sqlValuesOfParameters, boolean queryOrUpdate){
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
+		List<List<Attribute>> ret = new ArrayList<List<Attribute>>();
 		
 		try {
 			pstmt = getConnection().prepareStatement(sql);
@@ -185,25 +194,75 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 			}
 			if(queryOrUpdate){
 				rs = pstmt.executeQuery();
+				ret = processingResult(rs);
 			} else {
 				pstmt.executeUpdate();
 			}
 			
-		} catch (SQLException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
+		} catch (SQLException ex) {
+			LOGGER.error(ex.getMessage());
+			if(rethrowSQLException(ex.getErrorCode())){
+				throw new ConnectorException(ex.getMessage(), ex);
+			}
 		} finally{
 			try {
+				if(rs!=null){
+		            rs.close();
+				}
 				if(pstmt!=null){
 		            pstmt.close();
 				}
-			} catch (SQLException e) {
-				LOGGER.error(e.getMessage());
-				e.printStackTrace();
+			} catch (SQLException ex) {
+				LOGGER.error(ex.getMessage());
+				if(rethrowSQLException(ex.getErrorCode())){
+					throw new ConnectorException(ex.getMessage(), ex);
+				}
 			}
 		}
-		return rs;
+		return ret;
 	}
+	
+	private List<List<Attribute>> processingResult(ResultSet rs) {
+		
+		List<List<Attribute>> ret = new ArrayList<List<Attribute>>();
+		
+		try {
+			
+			while(rs.next()){
+				int i = 1;
+				List<Attribute> oneRow = new ArrayList<Attribute>();
+				while(i <= rs.getMetaData().getColumnCount()){
+					AttributeBuilder attrB = new AttributeBuilder();
+					ResultSetMetaData metaData = rs.getMetaData();
+					attrB.setName(metaData.getColumnName(i).toLowerCase());
+					Object value = null;
+					int type = metaData.getColumnType(i);
+					if(!getConfiguration().isAllNative()){
+						if(Types.TIMESTAMP == type){
+							value = JdbcUtil.getValueOfColumn(Types.TIMESTAMP, i, rs);
+						} else if(JdbcUtil.getTypeOfAttribute(type).isAssignableFrom(String.class)){
+							value = JdbcUtil.getValueOfColumn(Types.VARCHAR, i, rs);
+						} else {
+							value = JdbcUtil.getValueOfColumn(type, i, rs);
+						}
+					} else { 
+						value = JdbcUtil.getValueOfColumn(type, i, rs);
+					}
+					attrB.addValue(value);
+					oneRow.add(attrB.build());
+					i++;
+				}
+				ret.add(oneRow);
+			}
+		} catch (SQLException ex) {
+			LOGGER.error(ex.getMessage());
+			if(rethrowSQLException(ex.getErrorCode())){
+				throw new ConnectorException(ex.getMessage(), ex);
+			}
+		}
+		return ret;
+	}
+
 	private int countChar(String str, char sch){
 		int count = 0;
 		for(char ch :str.toCharArray()){
@@ -265,8 +324,9 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		}
 	}
 	
-	protected Set<AttributeInfo> buildAttributeInfosFromTable(String nameOfTable, String keyNameOfTable, List<String> excludedNames) {
-		
+	public Set<AttributeInfo> buildAttributeInfosFromTable(String nameOfTable, String keyNameOfTable, List<String> excludedNames) {
+		this.namesOfRequiredColumns.clear();
+		this.sqlTypes.clear();
 		if (nameOfTable == null) {
 			LOGGER.error("Attribute nameOfTable not provided.");
 			throw new InvalidAttributeValueException("Attribute nameOfTable not provided.");
@@ -293,20 +353,39 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 				final String nameOfColumn = metaData.getColumnName(i);
 				final AttributeInfoBuilder attrInfoBuilder = new AttributeInfoBuilder();
 				final Integer numberOfType = metaData.getColumnType(i);
-				sqlTypes.put(nameOfColumn.toLowerCase(), numberOfType);
+				this.sqlTypes.put(nameOfColumn.toLowerCase(), numberOfType);
 				if (excludedNames == null || !excludedNames.contains(nameOfColumn)) {
 					
 					Class<?> type = JdbcUtil.getTypeOfAttribute(numberOfType);
 					attrInfoBuilder.setName(nameOfColumn.toLowerCase());
 					attrInfoBuilder.setType(type);
-					attrInfoBuilder.setRequired(metaData.isNullable(i)==ResultSetMetaData.columnNoNulls);
+					boolean required = metaData.isNullable(i)==ResultSetMetaData.columnNoNulls;
+					if(required && type.equals(String.class)){
+						this.namesOfRequiredColumns.add(nameOfColumn.toLowerCase());
+					}
+					attrInfoBuilder.setRequired(required);
 					attrsInfo.add(attrInfoBuilder.build());
 				}
 			}
 			return attrsInfo;
 		} catch (SQLException ex) {
-			throw new ConnectorException(ex.getMessage(), ex);
+			LOGGER.error(ex.getMessage());
+			if(rethrowSQLException(ex.getErrorCode())){
+				throw new ConnectorException(ex.getMessage(), ex);
+			}
 		}
+		return null;
 	}
 
+	public List<String> getNamesOfRequiredColumns() {
+		return namesOfRequiredColumns;
+	}
+	
+	public boolean rethrowSQLException(int eCode) {
+		if(eCode !=0 || getConfiguration().isRethrowAllSQLExceptions()){
+			return true;
+		}
+		return false;
+    }
+	
 }

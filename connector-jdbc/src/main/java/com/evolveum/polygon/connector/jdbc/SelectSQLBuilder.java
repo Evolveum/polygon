@@ -35,7 +35,7 @@ public class SelectSQLBuilder {
 	private int countForLimitClause = -1;
 	private String nameForGroupByClause = "";
 	private String havingClause = "";
-	private String orderByClause = "";
+	private String nameOfAttributeForOrder = "";
 	
 	public String build(){
 		if(StringUtil.isBlank(this.nameOfTable)){
@@ -51,10 +51,13 @@ public class SelectSQLBuilder {
 		if(this.countForLimitClause != -1){
 			sb.append(" LIMIT ").append(this.countForLimitClause);
 		}
-		if(StringUtil.isBlank(this.nameForGroupByClause)){
+		if(!StringUtil.isBlank(this.nameForGroupByClause)){
 			sb.append(" GROUP BY ").append(this.nameForGroupByClause);
 		}
-		sb.append(" ").append(this.havingClause).append(" ORDER BY").append(this.orderByClause);
+		sb.append(" ").append(this.havingClause);
+		if(!StringUtil.isBlank(this.nameOfAttributeForOrder)){
+			sb.append(" ORDER BY ").append(this.nameOfAttributeForOrder);
+		}
 		return sb.toString();
 	}
 	
@@ -197,10 +200,10 @@ public class SelectSQLBuilder {
 	
 	public void setAddNameOfColumnToOrderByClause(String function, String name, Boolean ascending) {
 		StringBuilder sb = new StringBuilder();
-		if(!StringUtil.isBlank(this.orderByClause)){
-			sb.append(this.orderByClause).append(", ");
+		if(!StringUtil.isBlank(this.nameOfAttributeForOrder)){
+			sb.append(this.nameOfAttributeForOrder).append(", ");
 		}
-		if(!StringUtil.isBlank(this.orderByClause)){
+		if(!StringUtil.isBlank(this.nameOfAttributeForOrder)){
 			sb.append(function).append("(").append(name).append(")");
 			
 		} else {
