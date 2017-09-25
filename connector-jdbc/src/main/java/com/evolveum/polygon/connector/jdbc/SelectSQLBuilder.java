@@ -42,10 +42,6 @@ public class SelectSQLBuilder {
 			throw new IllegalArgumentException("Variable nameOfTable can not be empty.");
 		}
 		
-		if(StringUtil.isBlank(this.whereClause)){
-			throw new IllegalArgumentException("Variable whereClause can not be empty.");
-		}
-		
 		StringBuilder sb = new StringBuilder();
 		sb.append(" SELECT ").append(this.topClause).append(" ").append(this.namesOfColumn).append(this.intoClause).append(" FROM ").append(this.nameOfTable).append(" ").append(this.joinClause).append(" ").append(this.whereClause);
 		if(this.countForLimitClause != -1){

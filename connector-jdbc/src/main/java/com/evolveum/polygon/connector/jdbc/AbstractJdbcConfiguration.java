@@ -26,7 +26,6 @@ import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.spi.AbstractConfiguration;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
-import org.identityconnectors.framework.spi.operations.SyncOp;
 
 public class AbstractJdbcConfiguration extends AbstractConfiguration {
 

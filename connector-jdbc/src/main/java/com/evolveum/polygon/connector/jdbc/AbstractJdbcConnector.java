@@ -183,6 +183,7 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 	}
 	
 	private List<List<Attribute>> execute(String sql, List<SQLParameter> sqlValuesOfParameters, boolean queryOrUpdate){
+		LOGGER.info("Execute qsl request: {0}", sql);
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		List<List<Attribute>> ret = new ArrayList<List<Attribute>>();
