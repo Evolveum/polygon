@@ -360,11 +360,12 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 					Class<?> type = JdbcUtil.getTypeOfAttribute(numberOfType);
 					attrInfoBuilder.setName(nameOfColumn.toLowerCase());
 					attrInfoBuilder.setType(type);
-					boolean required = metaData.isNullable(i)==ResultSetMetaData.columnNoNulls;
+					boolean required = isRequired(metaData, i);
 					if(required && type.equals(String.class)){
 						this.namesOfRequiredColumns.add(nameOfColumn.toLowerCase());
 					}
 					attrInfoBuilder.setRequired(required);
+					attrInfoBuilder.setMultiValued(isMultivalue(metaData, i));
 					attrsInfo.add(attrInfoBuilder.build());
 				}
 			}
@@ -377,7 +378,23 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		}
 		return null;
 	}
-
+	
+	protected boolean isMultivalue(ResultSetMetaData metaData, int i) { 
+		return false; 
+	}
+	
+	protected boolean isRequired(ResultSetMetaData metaData, int i){
+		try {
+			return metaData.isNullable(i)==ResultSetMetaData.columnNoNulls;
+		} catch (SQLException ex) {
+			LOGGER.error(ex.getMessage());
+			if(rethrowSQLException(ex.getErrorCode())){
+				throw new ConnectorException(ex.getMessage(), ex);
+			}
+		}
+		return false; 
+		}
+	
 	public List<String> getNamesOfRequiredColumns() {
 		return namesOfRequiredColumns;
 	}
