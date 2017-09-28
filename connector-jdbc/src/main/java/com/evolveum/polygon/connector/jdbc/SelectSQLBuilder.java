@@ -27,7 +27,7 @@ import org.identityconnectors.framework.common.objects.filter.Filter;
 public class SelectSQLBuilder {
 	
 	private String topClause = "";
-	private String namesOfColumn = "*";
+	private String namesOfColumn = "";
 	private String intoClause = "";
 	private String nameOfTable = "";
 	private String joinClause = "";
@@ -43,7 +43,14 @@ public class SelectSQLBuilder {
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append(" SELECT ").append(this.topClause).append(" ").append(this.namesOfColumn).append(this.intoClause).append(" FROM ").append(this.nameOfTable).append(" ").append(this.joinClause).append(" ").append(this.whereClause);
+		sb.append(" SELECT ").append(this.topClause).append(" ");
+		if(StringUtil.isBlank(this.namesOfColumn)){
+			sb.append("*");
+		} else {
+			sb.append(this.namesOfColumn);
+		}
+		
+		sb.append(this.intoClause).append(" FROM ").append(this.nameOfTable).append(" ").append(this.joinClause).append(" ").append(this.whereClause);
 		if(this.countForLimitClause != -1){
 			sb.append(" LIMIT ").append(this.countForLimitClause);
 		}
@@ -103,7 +110,7 @@ public class SelectSQLBuilder {
 		if(!StringUtil.isBlank(this.namesOfColumn)){
 			sb.append(this.namesOfColumn).append(", ");
 		}
-		if(!StringUtil.isBlank(this.namesOfColumn)){
+		if(!StringUtil.isBlank(function)){
 			sb.append(function).append("(").append(name).append(")");
 			
 		} else {
@@ -199,19 +206,19 @@ public class SelectSQLBuilder {
 		if(!StringUtil.isBlank(this.nameOfAttributeForOrder)){
 			sb.append(this.nameOfAttributeForOrder).append(", ");
 		}
-		if(!StringUtil.isBlank(this.nameOfAttributeForOrder)){
+		if(!StringUtil.isBlank(function)){
 			sb.append(function).append("(").append(name).append(")");
 			
 		} else {
 			sb.append(name);
 		}
 		
-		if(!ascending){
+		if(ascending){
 			sb.append(" ASC");
 		} else {
 			sb.append(" DESC");
 		}
-		this.namesOfColumn = sb.toString();
+		this.nameOfAttributeForOrder = sb.toString();
 	}
 	
 }

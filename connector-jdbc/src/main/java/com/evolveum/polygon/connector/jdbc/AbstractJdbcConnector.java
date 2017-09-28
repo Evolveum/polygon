@@ -239,7 +239,7 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 					Object value = null;
 					int type = metaData.getColumnType(i);
 					if(!getConfiguration().isAllNative()){
-						if(Types.TIMESTAMP == type){
+						if(getConfiguration().isNativeTimestamps() && Types.TIMESTAMP == type){
 							value = JdbcUtil.getValueOfColumn(Types.TIMESTAMP, i, rs);
 						} else if(JdbcUtil.getTypeOfAttribute(type).isAssignableFrom(String.class)){
 							value = JdbcUtil.getValueOfColumn(Types.VARCHAR, i, rs);
