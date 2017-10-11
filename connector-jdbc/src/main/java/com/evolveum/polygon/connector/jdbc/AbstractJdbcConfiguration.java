@@ -44,12 +44,11 @@ public class AbstractJdbcConfiguration extends AbstractConfiguration {
 	private String usedJdbcUrl = DEFAULT_URL;
 	private String quoting = EMPTY_STRING;
 	private boolean enableEmptyStr = false;
-	private boolean nativeTimestamps = false;
+	private String timestampPresentation = "unixEpoch";
 	private boolean allNative = false;
 	private boolean rethrowAllSQLExceptions = true;
 	private boolean suppressPass = true;
 	private String validConnectionQuery;
-	//private String changeLogColumn = EMPTY_STRING;
 	private String datasource = EMPTY_STRING;
 	private String[] JNDIProperties;
 	
@@ -135,13 +134,13 @@ public class AbstractJdbcConfiguration extends AbstractConfiguration {
 		this.enableEmptyStr = enableEmptyStr;
 	}
 	
-	@ConfigurationProperty(order = 10, displayMessageKey = "NATIVE_TIMESTAMPS_DISPLAY_NAME", helpMessageKey = "NATIVE_TIMESTAMPS_HELP")
-	public boolean isNativeTimestamps() {
-		return nativeTimestamps;
+	@ConfigurationProperty(order = 10, displayMessageKey = "TIMESTAMP_PRESENTATION_DISPLAY_NAME", helpMessageKey = "TIMESTAMP_PRESENTATION_HELP")
+	public String getTimestampPresentation() {
+		return this.timestampPresentation;
 	}
 
-	public void setNativeTimestamps(boolean nativeTimestamps) {
-		this.nativeTimestamps = nativeTimestamps;
+	public void setTimestampPresentation(String tmspPresentation) {
+		this.timestampPresentation = tmspPresentation;
 	}
 	
 	@ConfigurationProperty(order = 11, displayMessageKey = "ALL_NATIVE_DISPLAY_NAME", helpMessageKey = "ALL_NATIVE_HELP")
@@ -171,15 +170,6 @@ public class AbstractJdbcConfiguration extends AbstractConfiguration {
 		this.validConnectionQuery = value;
 	}
 
-//	@ConfigurationProperty(order = 14, operations = SyncOp.class, displayMessageKey = "CHANGE_LOG_COLUMN_DISPLAY_NAME", helpMessageKey = "CHANGE_LOG_COLUMN_HELP")
-//	public String getChangeLogColumn() {
-//		return this.changeLogColumn;
-//	}
-//
-//	public void setChangeLogColumn(String value) {
-//		this.changeLogColumn = value;
-//	}
-    
 	@ConfigurationProperty(order = 15, displayMessageKey = "SUPRESS_PASSWORD_DISPLAY_NAME", helpMessageKey = "SUPRESS_PASSWORD_HELP")
 	public boolean getSuppressPassword() {
 		return suppressPass;
@@ -249,6 +239,12 @@ public class AbstractJdbcConfiguration extends AbstractConfiguration {
 				|| quoting.equalsIgnoreCase("BACK") || quoting.equalsIgnoreCase("BRACKETS"))){
 			throw new IllegalArgumentException("Quoting ''"+quoting+"'' has invalid structure.");
 		}
+		
+		String timestampPresentation = getTimestampPresentation();
+		if(!(timestampPresentation.equalsIgnoreCase("UnixEpoch") || quoting.equalsIgnoreCase("string"))){
+			throw new IllegalArgumentException("Timestamp Presentation mode has invalid value: '" + timestampPresentation + "'");
+		}
+		
 		LOGGER.ok("Configuration is valid.");
 	}
     

@@ -15,19 +15,13 @@
  */
 package com.evolveum.polygon.connector.jdbc;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Blob;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -191,7 +185,7 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		try {
 			pstmt = getConnection().prepareStatement(sql);
 			if(sql.contains("?") && sqlValuesOfParameters != null){
-				setSqlParameters(pstmt, sql, sqlValuesOfParameters);
+				JdbcUtil.setSqlParameters(pstmt, sql, sqlValuesOfParameters);
 			}
 			if(queryOrUpdate){
 				rs = pstmt.executeQuery();
@@ -239,15 +233,15 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 					Object value = null;
 					int type = metaData.getColumnType(i);
 					if(!getConfiguration().isAllNative()){
-						if(getConfiguration().isNativeTimestamps() && Types.TIMESTAMP == type){
-							value = JdbcUtil.getValueOfColumn(Types.TIMESTAMP, i, rs);
-						} else if(JdbcUtil.getTypeOfAttribute(type).isAssignableFrom(String.class)){
-							value = JdbcUtil.getValueOfColumn(Types.VARCHAR, i, rs);
+						if(Types.TIMESTAMP == type || Types.TIME == type || Types.DATE == type){
+							value = JdbcUtil.getValueOfColumn(type, i, rs, getConfiguration().getTimestampPresentation());
+						} else if(JdbcUtil.getTypeOfAttribute(type, getConfiguration().getTimestampPresentation()).isAssignableFrom(String.class)){
+							value = JdbcUtil.getValueOfColumn(Types.VARCHAR, i, rs, getConfiguration().getTimestampPresentation());
 						} else {
-							value = JdbcUtil.getValueOfColumn(type, i, rs);
+							value = JdbcUtil.getValueOfColumn(type, i, rs, getConfiguration().getTimestampPresentation());
 						}
 					} else { 
-						value = JdbcUtil.getValueOfColumn(type, i, rs);
+						value = JdbcUtil.getValueOfColumn(type, i, rs, getConfiguration().getTimestampPresentation());
 					}
 					attrB.addValue(value);
 					oneRow.add(attrB.build());
@@ -264,67 +258,6 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		return ret;
 	}
 
-	private int countChar(String str, char sch){
-		int count = 0;
-		for(char ch :str.toCharArray()){
-			if(sch == ch){
-				count++;
-			}
-		}
-		return count;
-	}
-	
-	private void setSqlParameters(PreparedStatement pstmt, String sql, List<SQLParameter> sqlValuesOfParameters) throws SQLException {
-		if(Integer.compare(countChar(sql, '?'), sqlValuesOfParameters.size()) != 0){
-			throw new IllegalArgumentException("Count of provided parameters and count of needed parameters in sql query is not same.");
-		}
-		
-		for(int i=1; i< sqlValuesOfParameters.size()+1;i++){
-			
-			int sqlType = sqlValuesOfParameters.get(i-1).getSqlType();
-			Object value = sqlValuesOfParameters.get(i-1).getValue();
-			
-			
-			if(value == null) {
-				pstmt.setObject(i, sqlType);
-	        }else if(sqlType == Types.NULL) {
-	        	pstmt.setObject(i, value);  
-	        }else if(value instanceof String){
-	        	pstmt.setString(i, (String)value);
-	        }else if(value instanceof Integer){
-	        	pstmt.setInt(i, (Integer)value);
-	        }else if(value instanceof Boolean){
-	        	pstmt.setBoolean(i, (Boolean)value);
-	        }else if(value instanceof Double){
-	        	pstmt.setDouble(i, (Double)value);
-	        }else if(value instanceof Float){
-	        	pstmt.setFloat(i, (Float)value);
-	        }else if(value instanceof Long){
-	        	pstmt.setLong(i, (Long)value);
-	        }else if(value instanceof byte[]){
-	        	pstmt.setBytes(i, (byte[])value);
-	        }else if(value instanceof Timestamp){
-	        	pstmt.setTimestamp(i, (Timestamp)value);
-	        }else if(value instanceof Date){
-	        	pstmt.setDate(i, (Date)value);
-	        }else if(value instanceof Time){
-	        	pstmt.setTime(i, (Time)value);
-	        }else if(value instanceof Date){
-	        	pstmt.setDate(i, (Date)value);
-	        }else if(value instanceof BigDecimal){
-	        	pstmt.setBigDecimal(i, (BigDecimal)value);
-	        }else if(value instanceof BigInteger){
-	        	pstmt.setLong(i, ((BigInteger)value).longValue());
-	        }else if(value instanceof Byte){
-	        	pstmt.setByte(i, (Byte)value);
-	        }else if(value instanceof Blob){
-	        	pstmt.setBlob(i, (Blob)value);
-	        } else {
-	        	pstmt.setObject(i, value);
-	        }	
-		}
-	}
-	
 	public Set<AttributeInfo> buildAttributeInfosFromTable(String nameOfTable, String keyNameOfTable, List<String> excludedNames) {
 		this.namesOfRequiredColumns.clear();
 		this.sqlTypes.clear();
@@ -357,7 +290,7 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 				this.sqlTypes.put(nameOfColumn.toLowerCase(), numberOfType);
 				if (excludedNames == null || !excludedNames.contains(nameOfColumn)) {
 					
-					Class<?> type = JdbcUtil.getTypeOfAttribute(numberOfType);
+					Class<?> type = JdbcUtil.getTypeOfAttribute(numberOfType, getConfiguration().getTimestampPresentation());
 					attrInfoBuilder.setName(nameOfColumn.toLowerCase());
 					attrInfoBuilder.setType(type);
 					boolean required = isRequired(metaData, i);
@@ -405,5 +338,4 @@ public class AbstractJdbcConnector<C extends AbstractJdbcConfiguration> implemen
 		}
 		return false;
     }
-	
 }
