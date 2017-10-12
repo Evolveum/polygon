@@ -82,7 +82,7 @@ public final class JdbcUtil {
         	return byte[].class;
         }else if(type == Types.DECIMAL || type == Types.NUMERIC){
         	return BigDecimal.class;
-        }else if((type == Types.TIMESTAMP || type == Types.TIME || type == Types.DATE) && timestampPresentation != null && timestampPresentation.equalsIgnoreCase("unixEpoch")){
+        }else if((type == Types.TIMESTAMP || type == Types.DATE) && timestampPresentation != null && timestampPresentation.equalsIgnoreCase("unixEpoch")){
         	return Long.class;
         } else {
         	return String.class;
@@ -104,7 +104,7 @@ public final class JdbcUtil {
 		} else if(type == Types.DATE){
 			return toConnId(rs.getDate(i), timestampPresentation);
 		} else if(type == Types.TIME){
-			return toConnId(rs.getTime(i), timestampPresentation);
+			return toConnId(rs.getTime(i));
 		} else if(type == Types.BIT || type == Types.BOOLEAN){
 			return rs.getBoolean(i);
 		} else if(type == Types.NULL){
@@ -124,13 +124,11 @@ public final class JdbcUtil {
 		}
 	}
 	
-	public static Object toConnId(Time time, String timestampPresentation){
-		if(timestampPresentation != null && timestampPresentation.equalsIgnoreCase("unixEpoch")){
-			return time.getTime();
-		} else if(timestampPresentation != null && timestampPresentation.equalsIgnoreCase("string")){
+	public static Object toConnId(Time time){
+		try {
 			return new SimpleDateFormat("HH:mm:ss.SSSXXX").format(time);
-		} else {
-			throw new IllegalArgumentException("Timestamp Presentation mode has invalid value: '" + timestampPresentation + "'");
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("It is not possible to parse Time from input value:'"+time.toString()+"' ");
 		}
 	}
 	
@@ -241,7 +239,7 @@ public final class JdbcUtil {
 		} else if(sqlType == Types.DATE){
 			return stringOrLongToDate(value);
 		} else if(sqlType == Types.TIME){
-			return stringOrLongToTime(value);
+			return stringToTime(value);
 		} else if(sqlType == Types.BIT || sqlType == Types.BOOLEAN && value instanceof String){
 			return Boolean.valueOf((String)value);
 		} else if(sqlType == Types.LONGVARCHAR || sqlType == Types.VARCHAR || sqlType == Types.CHAR){
@@ -279,7 +277,7 @@ public final class JdbcUtil {
 		}
 	}
 	
-	public static Time stringOrLongToTime(Object value){
+	public static Time stringToTime(Object value){
 		if(value instanceof String){
 			Time parsedTime;
 			try {
@@ -293,15 +291,10 @@ public final class JdbcUtil {
 				}
 			}
 			return parsedTime;
-		} else if(value instanceof Long){
-			try {
-				return new Time((Long)value);
-			} catch (NumberFormatException exp) {
-				throw new IllegalArgumentException("It is not possible to parse Time from input value of type Long.");
-			}
 		} else {
-			throw new IllegalArgumentException("Wrong type of input value. It is possible to create Time from value of type Long or String");
+			throw new IllegalArgumentException("Wrong type of input value. It is possible to create Time from value of String type.");
 		}
+		
 	}
 
 	public static Date stringOrLongToDate(Object value){
