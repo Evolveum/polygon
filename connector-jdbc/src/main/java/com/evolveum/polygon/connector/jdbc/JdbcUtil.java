@@ -115,6 +115,9 @@ public final class JdbcUtil {
 	}
 	
 	public static Object toConnId(Date date, String timestampPresentation){
+		if(date == null){
+			return null;
+		}
 		if(timestampPresentation != null && timestampPresentation.equalsIgnoreCase("unixEpoch")){
 			return date.getTime();
 		} else if(timestampPresentation != null && timestampPresentation.equalsIgnoreCase("string")){
@@ -125,6 +128,9 @@ public final class JdbcUtil {
 	}
 	
 	public static Object toConnId(Time time){
+		if(time == null){
+			return null;
+		}
 		try {
 			return new SimpleDateFormat("HH:mm:ss.SSSXXX").format(time);
 		} catch (IllegalArgumentException e) {
@@ -133,6 +139,9 @@ public final class JdbcUtil {
 	}
 	
 	public static Object toConnId(Timestamp timestamp, String timestampPresentation){
+		if(timestamp == null){
+			return null;
+		}
 		if(timestampPresentation != null && timestampPresentation.equalsIgnoreCase("unixEpoch")){
 			return timestamp.getTime();
 		} else if(timestampPresentation != null && timestampPresentation.equalsIgnoreCase("string")){
