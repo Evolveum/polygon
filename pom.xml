@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2010-2016 Evolveum
+  ~ Copyright (c) 2010-2018 Evolveum
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
     <groupId>com.evolveum.polygon</groupId>
     <artifactId>polygon</artifactId>
-    <version>1.4.3.0-SNAPSHOT</version>
+    <version>1.5.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -36,9 +36,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.source.version>1.7</project.source.version>
-        <polygon.version>1.4.3.0-SNAPSHOT</polygon.version>
-        <connId.version>1.4.3.0-SNAPSHOT</connId.version>
+        <project.source.version>1.8</project.source.version>
+        <polygon.version>1.5.0.0-SNAPSHOT</polygon.version>
+        <connId.version>1.5.0.0-SNAPSHOT</connId.version>
         <testng.version>6.8.8</testng.version>
     </properties>
 
