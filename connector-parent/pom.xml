@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2010-2015 Evolveum
+  ~ Copyright (c) 2010-2018 Evolveum
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -49,9 +49,10 @@
     </properties>
 
     <dependencies>
+    
         <dependency>
-		<groupId>net.tirasa.connid</groupId>
-		<artifactId>connector-framework</artifactId>
+			<groupId>net.tirasa.connid</groupId>
+			<artifactId>connector-framework</artifactId>
         	<version>${connId.version}</version>
         </dependency>
 
@@ -61,12 +62,19 @@
             <version>${connId.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <dependency>
             <groupId>net.tirasa.connid</groupId>
             <artifactId>connector-framework-contract</artifactId>
             <version>${connId.version}</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+		    <groupId>com.evolveum.polygon</groupId>
+		    <artifactId>connector-common</artifactId>
+			<version>${polygon.version}</version>
+		</dependency>
 
         <dependency>
             <groupId>org.testng</groupId>
@@ -74,6 +82,7 @@
             <version>6.8</version>
             <scope>test</scope>
         </dependency>
+        
     </dependencies>
 
     <build>
