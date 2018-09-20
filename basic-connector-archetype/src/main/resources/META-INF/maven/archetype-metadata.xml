@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2010-2014 Evolveum
+  ~ Copyright (c) 2010-2018 Evolveum
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,7 +20,11 @@
                       xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
                       name="connector-archetype" partial="false">
     <requiredProperties>
-        <requiredProperty key="connectorName"/>
+        <requiredProperty key="connectorName">
+        </requiredProperty>
+        <requiredProperty key="polygonVersion">
+            <defaultValue>${project.version}</defaultValue>
+         </requiredProperty>
     </requiredProperties>
 
     <fileSets>

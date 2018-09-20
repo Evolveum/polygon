@@ -20,9 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.evolveum.polygon</groupId>
     <artifactId>basic-connector-archetype</artifactId>
-    <version>1.5.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -30,4 +28,23 @@
         <artifactId>polygon</artifactId>
         <version>1.5.0.0-SNAPSHOT</version>
     </parent>
+    
+    <build>
+	    <resources>
+			<resource>
+			    <directory>src/main/resources</directory>
+			    <filtering>true</filtering>
+			    <includes>
+			        <include>META-INF/maven/archetype-metadata.xml</include>
+			    </includes>
+			</resource>
+			<resource>
+			    <directory>src/main/resources</directory>
+			    <filtering>false</filtering>
+			    <excludes>
+			        <exclude>META-INF/maven/archetype-metadata.xml</exclude>
+			    </excludes>
+			</resource>
+		</resources>
+	</build>
 </project>
