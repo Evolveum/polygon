@@ -22,7 +22,7 @@
 
     <groupId>com.evolveum.polygon</groupId>
     <artifactId>polygon</artifactId>
-    <version>1.5.0.0-SNAPSHOT</version>
+    <version>1.5.0.0</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -37,8 +37,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.source.version>1.8</project.source.version>
-        <polygon.version>1.5.0.0-SNAPSHOT</polygon.version>
-        <connId.version>1.5.0.0-SNAPSHOT</connId.version>
+        <polygon.version>1.5.0.0</polygon.version>
+        <connId.version>1.5.0.0</connId.version>
         <testng.version>6.8.8</testng.version>
     </properties>
 
