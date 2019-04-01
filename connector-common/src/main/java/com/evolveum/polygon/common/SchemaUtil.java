@@ -30,6 +30,9 @@ import org.identityconnectors.framework.common.objects.ObjectClassInfo;
  *
  */
 public class SchemaUtil {
+	
+	public static final String POLYSTRING_SUBTYPE = "http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/subtypes#PolyString";
+	public static final String POLYSTRING_ORIG_KEY = "";
 
 	public static <T> T getSingleValue(Attribute attribute, Class<T> expectedClass) {
 		List<Object> values = attribute.getValue();
@@ -55,6 +58,15 @@ public class SchemaUtil {
 			throw new InvalidAttributeValueException("Attribute "+attribute.getName()+" cannot be blank");
 		}
 		return value;
+	}
+	
+	public static AttributeInfo findAttributeInfo(ObjectClassInfo connIdObjectClassInfo, String connIdAttributeName) {
+		for (AttributeInfo attributeInfo: connIdObjectClassInfo.getAttributeInfo()) {
+			if (attributeInfo.is(connIdAttributeName)) {
+				return attributeInfo;
+			}
+		}
+		return null;
 	}
 
 	public static AttributeInfo findAttributeInfo(ObjectClassInfo icfObjectClassInfo, Attribute attribute) {
