@@ -30,7 +30,7 @@ import java.util.GregorianCalendar;
 public class XMLGregorianCalendarUtils {
 
     private static DatatypeFactory df = null;
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     static {
         try {
