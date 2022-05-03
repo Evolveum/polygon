@@ -22,7 +22,7 @@
 
     <groupId>com.evolveum.polygon</groupId>
     <artifactId>polygon</artifactId>
-    <version>1.5.1.0</version>
+    <version>1.5.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
