@@ -37,8 +37,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.source.version>1.8</project.source.version>
-        <polygon.version>1.5.1.0</polygon.version>
-        <connId.version>1.5.1.0</connId.version>
+        <polygon.version>1.5.2.0-SNAPSHOT</polygon.version>
+        <connId.version>1.5.2.0-SNAPSHOT</connId.version>
         <testng.version>6.8.8</testng.version>
     </properties>
 
