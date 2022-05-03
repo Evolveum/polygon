@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2010-2018 Evolveum
+  ~ Copyright (c) 2010-2022 Evolveum
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
     <groupId>com.evolveum.polygon</groupId>
     <artifactId>polygon</artifactId>
-    <version>1.5.1.0-SNAPSHOT</version>
+    <version>1.5.1.0</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -37,8 +37,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.source.version>1.8</project.source.version>
-        <polygon.version>1.5.1.0-SNAPSHOT</polygon.version>
-        <connId.version>1.5.1.0-SNAPSHOT</connId.version>
+        <polygon.version>1.5.1.0</polygon.version>
+        <connId.version>1.5.1.0</connId.version>
         <testng.version>6.8.8</testng.version>
     </properties>
 
@@ -69,18 +69,18 @@
     </pluginRepositories>
     
     <dependencyManagement>
-    	<dependencies>
-	        <dependency>
-	            <groupId>net.tirasa.connid</groupId>
-	            <artifactId>connector-framework</artifactId>
-	            <version>${connId.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.testng</groupId>
-	            <artifactId>testng</artifactId>
-	            <version>${testng.version}</version>
-	        </dependency>
-	    </dependencies>
+        <dependencies>
+            <dependency>
+                <groupId>net.tirasa.connid</groupId>
+                <artifactId>connector-framework</artifactId>
+                <version>${connId.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
     <build>
