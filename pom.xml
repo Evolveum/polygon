@@ -36,10 +36,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.source.version>1.8</project.source.version>
+        <project.source.version>11</project.source.version>
         <polygon.version>1.5.2.0-SNAPSHOT</polygon.version>
         <connId.version>1.5.2.0-SNAPSHOT</connId.version>
-        <testng.version>6.8.8</testng.version>
+        <testng.version>7.4.0</testng.version>
     </properties>
 
     <scm>
@@ -89,7 +89,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
+                    <version>3.10.1</version>
                     <configuration>
                         <source>${project.source.version}</source>
                         <target>${project.source.version}</target>
@@ -98,7 +98,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.2.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
