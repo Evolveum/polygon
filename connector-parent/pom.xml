@@ -71,7 +71,7 @@
         <dependency>
             <groupId>com.evolveum.polygon</groupId>
             <artifactId>connector-common</artifactId>
-            <version>${project.version}</version>
+            <version>${polygon.version}</version>
         </dependency>
 
         <dependency>
