@@ -36,17 +36,17 @@ podTemplate(
                     ln -s ../jenkins-nexus/settings.xml /root/.m2/settings.xml
 
                     mvn -B -ntp clean ${params.SKIP_DEPLOY ? 'install' : 'deploy'}
-
-                    step([
-                        $class: 'Publisher',
-                        reportFilenamePattern: '**/testng-results.xml'
-                    ])
-
-                    if (currentBuild.result == 'UNSTABLE' || params.ARCHIVE_LOGS) {
-                        sh "find . -wholename '*/target/test.log' -print0 | tar -czf test-logs.tgz --null -T -"
-	                    archiveArtifacts allowEmptyArchive: true, artifacts: "test-logs.tgz", followSymlinks: false
-                    }
                 """
+
+                step([
+                    $class: 'Publisher',
+                    reportFilenamePattern: '**/testng-results.xml'
+                ])
+
+                if (currentBuild.result == 'UNSTABLE' || params.ARCHIVE_LOGS) {
+                    sh "find . -wholename '*/target/test.log' -print0 | tar -czf test-logs.tgz --null -T -"
+                    archiveArtifacts allowEmptyArchive: true, artifacts: "test-logs.tgz", followSymlinks: false
+                }
             }
         }
     }
