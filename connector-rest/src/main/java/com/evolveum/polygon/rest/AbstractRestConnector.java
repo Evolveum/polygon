@@ -106,6 +106,9 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
             case TOKEN:
                 break;
 
+            case BEARER_TOKEN:
+                break;
+
             default:
 
                 throw new IllegalArgumentException("Unknown authentication method " + getConfiguration().getAuthMethod());
@@ -155,7 +158,8 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
      */
     public CloseableHttpResponse execute(HttpUriRequest request) {
         try {
-            if (AbstractRestConfiguration.AuthMethod.TOKEN.name().equals(getConfiguration().getAuthMethod())) {
+            if (AbstractRestConfiguration.AuthMethod.TOKEN.name().equals(getConfiguration().getAuthMethod()) ||
+                AbstractRestConfiguration.AuthMethod.BEARER_TOKEN.name().equals(getConfiguration().getAuthMethod())) {
 
                 final StringBuilder token = new StringBuilder();
                 if (getConfiguration().getTokenValue() != null) {
@@ -167,7 +171,12 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
                     });
                 }
 
-                request.setHeader(getConfiguration().getTokenName(), token.toString());
+                if (AbstractRestConfiguration.AuthMethod.TOKEN.name().equals(getConfiguration().getAuthMethod())) {
+                    request.setHeader(getConfiguration().getTokenName(), token.toString());
+                } else {
+                    request.setHeader("Authorization", "Bearer " + token.toString());
+                }
+
             }
             return getHttpClient().execute(request);
         } catch (IOException e) {
