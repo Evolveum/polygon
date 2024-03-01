@@ -54,12 +54,12 @@
 
     <distributionManagement>
         <repository>
-            <id>evolveum-releases</id>
+            <id>evolveum-nexus</id>
             <name>Evolveum Releases</name>
             <url>https://nexus.evolveum.com/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>evolveum-snapshots</id>
+            <id>evolveum-nexus</id>
             <name>Evolveum Snapshots</name>
             <url>https://nexus.evolveum.com/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
