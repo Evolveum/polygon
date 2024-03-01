@@ -15,27 +15,26 @@
  */
 package com.evolveum.polygon.rest;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.identityconnectors.common.StringUtil;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
@@ -48,8 +47,6 @@ import org.identityconnectors.framework.spi.Connector;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.URI;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Set;
 
@@ -81,22 +78,19 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
     }
 
     private CloseableHttpClient createHttpClient() {
-        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         URI serviceAddress = URI.create(configuration.getServiceAddress());
-        final HttpHost httpHost = new HttpHost(serviceAddress.getHost(),
-                serviceAddress.getPort(), serviceAddress.getScheme());
+        final HttpHost httpHost = new HttpHost(serviceAddress.getScheme(), serviceAddress.getHost(),
+                serviceAddress.getPort());
 
         switch (AbstractRestConfiguration.AuthMethod.valueOf(getConfiguration().getAuthMethod())) {
             case BASIC:
-                final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                configuration.getPassword().access(new GuardedString.Accessor() {
-                    @Override
-                    public void access(char[] clearChars) {
-                        credentialsProvider.setCredentials(new AuthScope(httpHost.getHostName(), httpHost.getPort()),
-                                new UsernamePasswordCredentials(configuration.getUsername(), new String(clearChars)));
-                    }
-                });
+                final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                configuration.getPassword().access(
+                        clearChars -> credentialsProvider.setCredentials(
+                                new AuthScope(httpHost.getHostName(), httpHost.getPort()),
+                                new UsernamePasswordCredentials(configuration.getUsername(), clearChars)));
                 httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
                 break;
 
@@ -115,14 +109,8 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
         if (configuration.getTrustAllCertificates()) {
             try {
                 final SSLContext sslContext = new SSLContextBuilder()
-                        .loadTrustMaterial(null, new org.apache.http.ssl.TrustStrategy() {
-                            @Override
-                            public boolean isTrusted(X509Certificate[] x509CertChain, String authType) throws CertificateException {
-                                return true;
-                            }
-                        })
+                        .loadTrustMaterial(null, (x509CertChain, authType) -> true)
                         .build();
-                httpClientBuilder.setSSLContext(sslContext);
                 httpClientBuilder.setConnectionManager(
                         new PoolingHttpClientConnectionManager(
                                 RegistryBuilder.<ConnectionSocketFactory>create()
@@ -195,18 +183,18 @@ public abstract class AbstractRestConnector<C extends AbstractRestConfiguration>
      * throws the ConnId exception that is the most appropriate match for the error.
      */
     public void processResponseErrors(CloseableHttpResponse response) {
-        int statusCode = response.getStatusLine().getStatusCode();
+        int statusCode = response.getCode();
         if (statusCode >= 200 && statusCode <= 299) {
             return;
         }
         String responseBody = null;
         try {
             responseBody = EntityUtils.toString(response.getEntity());
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             LOG.warn("cannot read response body: " + e, e);
         }
 
-        String message = "HTTP error " + statusCode + " " + response.getStatusLine().getReasonPhrase() + " : " + responseBody;
+        String message = "HTTP error " + statusCode + " " + response.getReasonPhrase() + " : " + responseBody;
         LOG.error("{0}", message);
         if (statusCode == 400 || statusCode == 405 || statusCode == 406) {
             closeResponse(response);

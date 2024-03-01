@@ -55,6 +55,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.evolveum.polygon</groupId>
+            <artifactId>connector-common</artifactId>
+            <version>${polygon.version}</version>
+        </dependency>
+
+        <!-- TEST DEPENDENCIES -->
+        <dependency>
             <groupId>net.tirasa.connid</groupId>
             <artifactId>connector-test-common</artifactId>
             <version>${connId.version}</version>
@@ -69,15 +76,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.evolveum.polygon</groupId>
-            <artifactId>connector-common</artifactId>
-            <version>${polygon.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.8</version>
             <scope>test</scope>
         </dependency>
 
@@ -89,7 +89,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <appendAssemblyId>false</appendAssemblyId>
                         <descriptors>
@@ -117,7 +117,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.12.4</version>
+                    <version>3.2.5</version>
                     <configuration>
                         <includes>
                             <include>**/Test*.java</include>
