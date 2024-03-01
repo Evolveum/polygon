@@ -67,12 +67,12 @@
 
     <repositories>
         <repository>
-            <id>evolveum-releases</id>
+            <id>evolveum-nexus</id>
             <name>Evolveum Public Releases</name>
             <url>https://nexus.evolveum.com/nexus/content/groups/public/</url>
         </repository>
         <repository>
-            <id>evolveum-snapshots</id>
+            <id>evolveum-nexus</id>
             <name>Internal Releases</name>
             <url>https://nexus.evolveum.com/nexus/content/repositories/snapshots/</url>
         </repository>
