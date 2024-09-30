@@ -43,7 +43,7 @@
         -->
         <polygon.version>1.5.3.0-SNAPSHOT</polygon.version>
         <!-- Snapshot can fail, if purged by our Nexus, try 1.5.1.3 instead just to check the build. -->
-        <connId.version>1.5.3.0-M3</connId.version>
+        <connId.version>1.6.0.0-RC1</connId.version>
         <testng.version>7.9.0</testng.version>
     </properties>
 
