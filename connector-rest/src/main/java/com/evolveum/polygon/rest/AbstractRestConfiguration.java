@@ -26,7 +26,7 @@ import org.identityconnectors.framework.spi.ConfigurationProperty;
 public class AbstractRestConfiguration extends AbstractConfiguration {
 	
 	public enum AuthMethod {
-        NONE, BASIC, TOKEN
+        NONE, BASIC, TOKEN, BEARER_TOKEN
 	}
 	
 	private String serviceAddress = null;
